@@ -47,6 +47,10 @@ class User
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $dateDeletion = null;
 
+    public function __construct(){
+        // $dateCreation 
+    }
+
     public function getId(): ?int
     {
         return $this->id;

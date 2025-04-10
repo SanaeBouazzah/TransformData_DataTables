@@ -21,5 +21,8 @@
     "version": "1.0.0",
     "main": "index.js",
     "repository": "git@github.com:SanaeBouazzah/TransformData_DataTables.git",
-    "author": "Sanae Bouazzah <sanaebouazzah2000@gmail.com>"
+    "author": "Sanae Bouazzah <sanaebouazzah2000@gmail.com>",
+    "dependencies": {
+        "jquery": "^3.7.1"
+    }
 }

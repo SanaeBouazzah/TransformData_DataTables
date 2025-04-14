@@ -25,14 +25,14 @@ $(document).ready(function() {
 
     $('#submitUser').click(function() {
         const userData = {
-            nom: $('#nom').val(),
-            prenom: $('#prenom').val(),
-            username: $('#username').val(),
-            password: $('#password').val(),
-            position: $('#position').val(),
-            adresse: $('#adresse').val(),
-            Tel1: $('#Tel1').val(),
-            Tel2: $('#Tel2').val(),
+            nom: $('#nom').val(data.nom),
+            prenom: $('#prenom').val(data.prenom),
+            username: $('#username').val(data.username),
+            password: $('#password').val(data.password),
+            position: $('#position').val(data.position),
+            adresse: $('#adresse').val(data.adresse),
+            Tel1: $('#Tel1').val(data.Tel1),
+            Tel2: $('#Tel2').val(data.Tel2),
         };
 
         $.ajax({

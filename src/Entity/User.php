@@ -5,9 +5,13 @@ namespace App\Entity;
 use App\Repository\UserRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
+#[UniqueEntity('username')]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-class User
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -23,10 +27,13 @@ class User
     #[ORM\Column(length: 50)]
     private ?string $username = null;
 
-    #[ORM\Column(type: Types::ARRAY)]
+    #[ORM\Column(type: 'json')]
     private array $roles = [];
 
+    private ?string $plainPassword = null;
+
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank()]
     private ?string $password = null;
 
     #[ORM\Column(length: 255)]
@@ -48,7 +55,7 @@ class User
     private ?\DateTimeImmutable $dateDeletion = null;
 
     public function __construct(){
-        // $dateCreation 
+        $this->dateCreation = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -92,6 +99,11 @@ class User
         return $this;
     }
 
+    public function eraseCredentials(): void
+    {
+        $this->plainPassword = null;
+    }
+
     public function getRoles(): array
     {
         return $this->roles;
@@ -99,9 +111,8 @@ class User
 
     public function setRoles(array $roles): static
     {
-        $this->roles = $roles;
-
-        return $this;
+        $this->roles = array_unique($roles);
+        return $this; 
     }
 
     public function getPassword(): ?string
@@ -186,5 +197,10 @@ class User
         $this->dateDeletion = $dateDeletion;
 
         return $this;
+    }
+
+    public function getUserIdentifier(): string
+    {
+        return $this->username; 
     }
 }

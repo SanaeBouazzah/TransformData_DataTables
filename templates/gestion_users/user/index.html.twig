@@ -1,55 +1,98 @@
-{% extends 'base.html.twig' %}
+{% extends 'layout/index.html.twig' %}
 
-{% block title %}User index{% endblock %}
+{% block title %}User index
+{% endblock %}
 
-{% block body %}
-    <h1>User index</h1>
+{% block content %}
 
-    <table class="table" id="datatables">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Nom</th>
-                <th>Prenom</th>
-                <th>Username</th>
-                <th>Roles</th>
-                <th>Password</th>
-                <th>Position</th>
-                <th>Adresse</th>
-                <th>Tel1</th>
-                <th>Tel2</th>
-                <th>DateCreation</th>
-                <th>DateDeletion</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for user in users %}
-            <tr>
-                <td>{{ user.id }}</td>
-                <td>{{ user.nom }}</td>
-                <td>{{ user.prenom }}</td>
-                <td>{{ user.username }}</td>
-                <td>{{ user.roles ? user.roles|join(', ') : '' }}</td>
-                <td>{{ user.password }}</td>
-                <td>{{ user.position }}</td>
-                <td>{{ user.adresse }}</td>
-                <td>{{ user.Tel1 }}</td>
-                <td>{{ user.Tel2 }}</td>
-                <td>{{ user.dateCreation ? user.dateCreation|date('Y-m-d H:i:s') : '' }}</td>
-                <td>{{ user.dateDeletion ? user.dateDeletion|date('Y-m-d H:i:s') : '' }}</td>
-                <td>
-                    <a href="{{ path('app_user_show', {'id': user.id}) }}">show</a>
-                    <a href="{{ path('app_user_edit', {'id': user.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="13">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+	{% for message in app.flashes('success') %}
+		<div class="alert alert-success">
+			{{message}}
+		</div>
+	{% endfor %}
+	<div class="card-header pt-4">
+		<i class="fas fa-table me-1"></i>
+		DataTable Example
+	</div>
+    <div class="datatable-container">
+	<table class="datatable-table" id="datatablesSimple">
+		<thead>
+			<tr>
+				<th>Id</th>
+				<th>Nom</th>
+				<th>Prenom</th>
+				<th>Username</th>
+				<th>Roles</th>
+				<th>Position</th>
+				<th>Adresse</th>
+				<th>Tel1</th>
+				<th>Tel2</th>
+				<th>DateCreation</th>
+				<th>DateDeletion</th>
+				<th>actions</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for user in users %}
+				<tr>
+					<td>{{ user.id }}</td>
+					<td>{{ user.nom }}</td>
+					<td>{{ user.prenom }}</td>
+					<td>{{ user.username }}</td>
+					<td>{{ user.roles ? user.roles|join(', ') : '' }}</td>
+					<td>{{ user.position }}</td>
+					<td>{{ user.adresse }}</td>
+					<td>{{ user.Tel1 }}</td>
+					<td>{{ user.Tel2 }}</td>
+					<td>{{ user.dateCreation ? user.dateCreation|date('Y-m-d H:i:s') : '' }}</td>
+					<td>{{ user.dateDeletion ? user.dateDeletion|date('Y-m-d H:i:s') : '' }}</td>
+					<td>
+						<a href="{{ path('app_user_show', {'id': user.id}) }}">show</a>
+						<a href="{{ path('app_user_edit', {'id': user.id}) }}">edit</a>
+					</td>
+				</tr>
+			{% else %}
+				<tr>
+					<td colspan="13">no records found</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+    </div>
 
-    <a href="{{ path('app_user_new') }}">Create new</a>
+	<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">Create new</button>
+
+	<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<form id="userForm">
+						<input type="text" id="nom" placeholder="Nom"/>
+						<input type="text" id="prenom" placeholder="Prénom"/>
+						<input type="text" id="username" placeholder="Username"/>
+						<input type="password" id="password" placeholder="Password"/>
+						<input type="text" id="position" placeholder="Position"/>
+						<input type="text" id="adresse" placeholder="Adresse"/>
+						<input type="text" id="Tel1" placeholder="Telephone 1"/>
+						<input type="text" id="Tel2" placeholder="Telephone 2"/>
+						<input type="text" id="roles" placeholder="Roles "/>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+					<button type="button" id="submitUser" class="btn btn-primary">Save changes</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	{% block javascripts %}
+		{{ parent() }}
+		{{ encore_entry_script_tags('addUser') }}
+		{{ encore_entry_script_tags('glindex') }}
+	{% endblock %}
 {% endblock %}

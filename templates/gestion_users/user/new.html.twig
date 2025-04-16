@@ -3,9 +3,27 @@
 {% block title %}New User{% endblock %}
 
 {% block body %}
+
+
     <h1>Create new User</h1>
 
-    {{ include('gestion_users/user/_form.html.twig') }}
+    <form id="userForm">
+        <input type="text" id="nom" placeholder="Nom" />
+        <input type="text" id="prenom" placeholder="Prénom" />
+        <input type="text" id="username" placeholder="Username" />
+        <input type="password" id="password" placeholder="Password" />
+        <input type="text" id="position" placeholder="Position" />
+        <input type="text" id="adresse" placeholder="Adresse" />
+        <input type="text" id="Tel1" placeholder="Telephone 1" />
+        <input type="text" id="Tel2" placeholder="Telephone 2" />
+        <button type="button" id="submitUser">Submit</button>
+    </form>
 
     <a href="{{ path('app_user_index') }}">back to list</a>
+
+
+{% endblock %}
+{% block javascripts %}
+{{parent()}}
+{{ encore_entry_script_tags('addUser')}}
 {% endblock %}

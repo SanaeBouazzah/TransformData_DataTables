@@ -1,4 +1,8 @@
+import "@fontsource/roboto-condensed";
+import "@fontsource/roboto-condensed/400.css"; 
+import "@fontsource/roboto-condensed/400-italic.css"; 
 import 'bootstrap/dist/css/bootstrap.min.css'; 
+import '@fortawesome/fontawesome-free/css/all.min.css';
 import 'bootstrap';
 import './styles/app.css';
 import './styles/style.css';
@@ -11,7 +15,8 @@ const routing = Routing.setRoutingData(routes);
 global.Routing = Routing
 
 const $ = require('jquery');
-const toastr = require('toastr');
+import toastr from 'toastr';
+import 'toastr/build/toastr.min.css';
 
 
 global.$ = global.jQuery = $;
@@ -35,3 +40,7 @@ toastr.options = {
   hideMethod: "fadeOut"
 };
 
+
+
+import 'datatables.net';
+import 'datatables.net-dt/css/dataTables.dataTables.min.css';

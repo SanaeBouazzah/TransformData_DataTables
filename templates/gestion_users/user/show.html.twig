@@ -1,16 +1,12 @@
-{% extends 'base.html.twig' %}
+{% extends 'layout/index.html.twig' %}
 
 {% block title %}User{% endblock %}
 
-{% block body %}
+{% block content %}
     <h1>User</h1>
 
     <table class="table">
         <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ user.id }}</td>
-            </tr>
             <tr>
                 <th>Nom</th>
                 <td>{{ user.nom }}</td>

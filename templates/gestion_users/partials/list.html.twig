@@ -1,26 +1,29 @@
 {% for user in users %}
-    <tr>
-        <td>{{ user.id }}</td>
-        <td>{{ user.nom }}</td>
-        <td>{{ user.prenom }}</td>
-        <td>{{ user.username }}</td>
-        <td>{{ user.roles ? user.roles|join(', ') : '' }}</td>
-        <td>{{ user.position }}</td>
-        <td>{{ user.adresse }}</td>
-        <td>{{ user.Tel1 }}</td>
-        <td>{{ user.Tel2 }}</td>
-        <td>{{ user.dateCreation ? user.dateCreation|date('Y-m-d H:i:s') : '' }}</td>
+    <tr id="user-row-{{ user.id }}">
+        <td class="text-center">{{ user.id }}</td>
+        <td class="text-center">{{ user.nom }}</td>
+        <td class="text-center">{{ user.prenom }}</td>
+        <td class="text-center">{{ user.username }}</td>
+        <td class="text-center">{{ user.roles ? user.roles|join(', ') : '' }}</td>
+        <td class="text-center">{{ user.position }}</td>
+        <td class="text-center">{{ user.adresse }}</td>
+        <td class="text-center">{{ user.Tel1 }}</td>
+        <td class="text-center">{{ user.Tel2 }}</td>
+        <td class="text-center">{{ user.dateCreation ? user.dateCreation|date('Y-m-d H:i:s') : '' }}</td>
         <td>
             <ul class="navbar-nav order-1 text-center">
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"></a>
                     <ul class="dropdown-menu dropdown-menu-end rounded-0" aria-labelledby="navbarDropdown">
                         <li>
-                            <a class="dropdown-item" href="{{ path('app_user_show', {'id': user.id}) }}">Consulter</a>
+                            <button class="dropdown-item" href="{{ path('app_user_show', {'id': user.id}) }}">Consulter</button>
                         </li>
                         <li>
-                            <a class="dropdown-item modifier-btn" data-user-id="{{ user.id }}" onclick="openEditModal({{ user.id }})" 
-                             data-bs-toggle="modal" data-bs-target="#EditModal">Modifier</a>
+                            <button class="dropdown-item modifier-btn" data-user-id="{{ user.id }}" onclick="openEditModal({{ user.id }})" 
+                             data-bs-toggle="modal" data-bs-target="#EditModal">Modifier</button>
+                        </li>
+                        <li>
+                            <button class="dropdown-item SupprimerBtn" data-user-id="{{ user.id }}" id="SupprimerBtn">Supprimer</button>
                         </li>
                     </ul>
                 </li>

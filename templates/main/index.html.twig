@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Unlock The Power
+{% endblock %}
+
+{% block body %}
+	<div style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.1)), url('{{ asset('build/images/earth.jpg') }}'); background-size: cover; background-position: center; height: 100vh;">
+		<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-bottom">
+			<div class="container px-4 px-lg-5">
+				<a class="navbar-brand" href="{{path('app_main')}}">Unlock The Power</a>
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<div class="collapse navbar-collapse" id="navbarResponsive">
+					<ul class="navbar-nav ml-auto">
+						<li class="nav-item active">
+							<a class="nav-link" href="#!">Home</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="#!">About</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="#!">Services</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="#!">Contact</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+		<section style="display: flex; align-items: center; justify-content: center; height: 100vh;">
+			<div class="container px-4 px-lg-5 text-center text-white">
+				<h1>Unlock The Power</h1>
+				<p style="width:400px; text-align:center; margin:auto;">
+					Lorem ipsum dolor sit amet, consectetur adipisicing elit. Deseruntniet sapiente  sed am.
+				</p>
+				{% if app.user %}
+					<a class="btn btn-light px-5 mt-4 rounded-0" href="{{ path('app_user_index') }}">Join Us</a>
+				{% else %}
+					<a class="btn btn-light px-5 mt-4 rounded-0" href="{{ path('app_login') }}">Join Us</a>
+				{% endif %}
+			</div>
+		</section>
+
+	</div>
+{% endblock %}

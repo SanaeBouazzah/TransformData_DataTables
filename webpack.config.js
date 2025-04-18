@@ -9,7 +9,7 @@ Encore
     .addEntry('style', './assets/styles/style.css')
     .addEntry('scripts', './assets/components/scripts.js')
     .addEntry('glindex', './assets/components/glindex.js')
-    .addEntry('addUser', './assets/components/gestion_users/addUser.js')
+    .addEntry('User', './assets/components/gestion_users/User.js')
     .splitEntryChunks()
     .enableSingleRuntimeChunk()
     .cleanupOutputBeforeBuild()

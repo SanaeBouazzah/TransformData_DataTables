@@ -11,8 +11,23 @@
 				</main>
 			</div>
 		</div>
-	{% block javascripts %}
-		{{parent()}}
-		{{ encore_entry_script_tags('scripts') }}
-	{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('scripts') }}
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const sidebarToggle = document.getElementById("sidebarToggle");
+    const body = document.body;
+    const sidebarState = localStorage.getItem("sidebarOpen");
+    if (sidebarState === "false") {
+        body.classList.add("sb-sidenav-toggled"); 
+    }
+    sidebarToggle.addEventListener("click", function() {
+        const isToggled = body.classList.toggle("sb-sidenav-toggled");
+        localStorage.setItem("sidebarOpen", isToggled ? "false" : "true");
+        console.log("Sidebar toggled. Open state:", !isToggled); 
+    });
+});
+</script>
+{% endblock %}
 {% endblock %}

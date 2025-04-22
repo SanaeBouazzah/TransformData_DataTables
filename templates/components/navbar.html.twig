@@ -5,27 +5,15 @@
 			<li class="nav-item dropdown">
 				<a class="nav-link dropdown-toggle d-flex align-items-center" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
 					<i class="fa-solid fa-user-tie"></i>
-						<div class="mx-2">
+					<div class="mx-2">
 						<span>{{app.user.username}}</span>
 					</div>
 				</a>
-				<ul
-					class="dropdown-menu dropdown-menu-end rounded-0" aria-labelledby="navbarDropdown">
-					{# <li>
-											<a class="dropdown-item" href="#!">Settings</a>
-										</li>
-										<li>
-											<a class="dropdown-item" href="#!">Activity Log</a>
-										</li>
-										<li><hr class="dropdown-divider"/></li> #}
-					<li>
-						<a class="dropdown-item" href="{{path('app_logout')}}">Logout</a>
-					</li>
-				</ul>
-			</li>
-		</ul>
+				<ul class="dropdown-menu dropdown-menu-end rounded-0" aria-labelledby="navbarDropdown">
+					<li><a class="dropdown-item" href="{{path('app_logout')}}">Logout</a></li></ul></li></ul>
 		<button class="btn btn-link btn-sm  order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!">
 			<i class="fa-solid fa-bars-staggered"></i>
 		</button>
 	</div>
 </nav>
+

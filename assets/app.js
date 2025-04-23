@@ -6,40 +6,50 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 import 'bootstrap';
 import './styles/app.css';
 import './styles/style.css';
+import 'toastr/build/toastr.css';
 import './images/agenda.jpg';
+import './images/earth.jpg';
+
+const $ = require('jquery');
 
 import Routing from './js/fos-routing/router';
 import routes from '../public/js/fos_js_routes.json';
-
 const routing = Routing.setRoutingData(routes);
 global.Routing = Routing
-
-const $ = require('jquery');
-import toastr from 'toastr';
-import 'toastr/build/toastr.min.css';
-
-
 global.$ = global.jQuery = $;
-global.toastr = toastr;
-global.Routing = Routing;
-toastr.options = {
-  closeButton: true,
-  debug: false,
-  newestOnTop: false,
-  progressBar: true,
-  positionClass: "toast-top-right",
-  preventDuplicates: false,
-  onclick: null,
-  showDuration: "300",
-  hideDuration: "1000",
-  timeOut: "5000",
-  extendedTimeOut: "1000",
-  showEasing: "swing",
-  hideEasing: "linear",
-  showMethod: "fadeIn",
-  hideMethod: "fadeOut"
-};
 
+import toastr from 'toastr';
+
+toastr.options = {
+    "closeButton": true,
+    "debug": false,
+    "newestOnTop": false,
+    "progressBar": false,
+    "positionClass": "toast-top-right",
+    "preventDuplicates": true,
+    "onclick": null,
+    "showDuration": "1000",
+    "hideDuration": "1000",
+    "timeOut": "5000",
+    "extendedTimeOut": "1000",
+    "showEasing": "swing",
+    "hideEasing": "linear",
+    "showMethod": "fadeIn",
+    "hideMethod": "fadeOut"
+}
+
+global.toastr = toastr
+const swal = require('sweetalert2');
+const swalWithBootstrapButtons = swal.mixin({
+    customClass: {
+        confirmButton: 'btn btn-white btn-xs sySweetStyle',
+        cancelButton: 'btn btn-warning btn-xs sySweetStyle'
+    },
+    buttonsStyling: false
+})
+
+global.Swal = swal;
+global.swalWithBootstrapButtons = swalWithBootstrapButtons;
 
 
 import 'datatables.net';

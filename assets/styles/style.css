@@ -2299,7 +2299,7 @@ textarea.form-control-lg {
 .form-check {
   display: block;
   min-height: 1.5rem;
-  padding-left: 1.5em;
+  padding-left: 2.5rem;
   margin-bottom: 0.125rem;
 }
 .form-check .form-check-input {
@@ -5298,7 +5298,7 @@ textarea.form-control-lg {
   font-size: var(--bs-toast-font-size);
   color: var(--bs-toast-color);
   pointer-events: auto;
-  background-color: var(--bs-toast-bg);
+  /* background-color: var(--bs-toast-bg); */
   background-clip: padding-box;
   border: var(--bs-toast-border-width) solid var(--bs-toast-border-color);
   box-shadow: var(--bs-toast-box-shadow);
@@ -11029,7 +11029,7 @@ body {
 }
 .sb-nav-fixed #layoutSidenav #layoutSidenav_content {
   padding-left: 225px;
-  top: 56px;
+  top: 24px;
 }
 
 #layoutError {

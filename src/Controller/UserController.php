@@ -12,96 +12,172 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 #[Route('/users')]
+// #[IsGranted('ROLE_USER')]
 final class UserController extends AbstractController
 {
-    #[Route(name: 'app_user_index', methods: ['GET'])]
-    public function index(UserRepository $userRepository): Response
+    #[Route('/', name: 'app_user_index', methods: ['GET'], options: ['expose' => true])]
+    public function index(Request $request, EntityManagerInterface $entityManager): Response
     {
-        return $this->render('gestion_users/user/index.html.twig', [
-            'users' => $userRepository->findAll(),
+        $users = $entityManager->getRepository(User::class)->findBY(['dateDeletion' => null]);
+        return $this->render('gestion_users/user/index.html.twig', ['users' => $users]);
+    }
+
+    #[Route('/app_user_list', name: 'app_user_list', methods: ['GET'], options: ['expose' => true])]
+    public function fetchAlertes(Request $request , EntityManagerInterface $entityManager){
+        $draw = $request->query->get('draw');
+        $start = $request->query->get('start') ?? 0;
+        $length = $request->query->get('length') ?? 10;
+        $search = $request->query->all('search')["value"];
+        $queryBuilder = $entityManager->createQueryBuilder()
+            ->select('u')
+            ->from(User::class, 'u')
+            ->where('u.dateDeletion IS NULL');
+        if (!empty($search)) {
+            $queryBuilder->andWhere('u.nom LIKE :search OR u.prenom LIKE :search OR u.username LIKE :search OR u.id LIKE :search')
+                ->setParameter('search', "%$search%");
+        }
+        $queryBuilder->setFirstResult($start)
+            ->setMaxResults($length);
+        $results = $queryBuilder->getQuery()->getResult();
+        $totalRecords = $entityManager->createQueryBuilder()
+            ->select('COUNT(u.id)')
+            ->from(User::class, 'u')
+            ->where('u.dateDeletion IS NULL')
+            ->getQuery()
+            ->getSingleScalarResult();
+        
+        $formattedData = [];
+        foreach ($results as $user) {
+             $formattedData[] = [
+                'id' => $user->getId(),
+                'nom' => $user->getNom(),
+                'prenom' => $user->getPrenom(),
+                'username' => $user->getUsername(),
+                'roles' => $user->getRoles(),
+                'position' => $user->getPosition(),
+                'adresse' => $user->getAdresse(),
+                'Tel1' => $user->getTel1(),
+                'Tel2' => $user->getTel2(),
+                'dateCreation' => $user->getDateCreation()?->format('Y-m-d H:i:s'),
+             ];
+        }
+        return new JsonResponse([
+            'draw' => $draw,
+            'recordsTotal' => $totalRecords,
+            'recordsFiltered' =>$totalRecords,
+            'data' => $formattedData,
         ]);
     }
 
-    #[Route('/new', name: 'app_user_new', methods: ['GET'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    #[Route('/new', name: 'app_user_new', options: ['expose'=>true], methods: ['POST'])]
+    public function new(Request $request, EntityManagerInterface  $entityManager, UserPasswordHasherInterface $passwordHasher): Response
     {
+        $data = json_decode($request->getContent(), true);
         if( !empty($data['nom']) || !empty($data['prenom']) || !empty($data['username']) ||
         !empty($data['password']) || !empty($data['position']) || !empty($data['adresse']) ||
          !empty($data['Tel1']) || !empty($data['Tel2'])){
-            $data = json_decode($request->getContent(), true);
             $user = new User();
             $user->setNom($data['nom']);
             $user->setPrenom($data['prenom']);
             $user->setUsername($data['username']);
-            $user->setPassword($data['password']);
+            $hashedPassword = $passwordHasher->hashPassword($user, $data['password']);
+            $user->setPassword($hashedPassword);
             $user->setPosition($data['position']);
             $user->setAdresse($data['adresse']);
             $user->setTel1($data['Tel1']);
             $user->setTel2($data['Tel2']); 
-        
+            $user->setRoles($data['roles'] ?? ['ROLE_USER']);
             $entityManager->persist($user);
             $entityManager->flush();
-            return $this->json(['status' => 'success', 'message' => 'User created successfully!']);
+            return new JsonResponse([
+                'success' => true,
+                'message' => 'User created successfully'
+            ]);
+        }
+        return new JsonResponse([
+            'success' => false,
+            'message' => 'Missing required user data'
+        ], Response::HTTP_BAD_REQUEST);
+
+    }
+    
+    #[Route('/{id}', name: 'app_user_show', methods: ['GET'], requirements: ['id' => '\d+'], options: ['expose' => true])]
+    public function show(int $id, EntityManagerInterface $entityManager): Response
+    {
+        $user = $entityManager->getRepository(User::class)->find($id);
+        return new JsonResponse([
+            'user' => [
+                'id' => $user->getId(),
+                'nom' => $user->getNom(),
+                'prenom' => $user->getPrenom(),
+                'username' => $user->getUsername(),
+                'position' => $user->getPosition(),
+                'adresse' => $user->getAdresse(),
+                'Tel1' => $user->getTel1(),
+                'Tel2' => $user->getTel2(),
+                'roles' => $user->getRoles(),
+            ]
+        ]);
+    }
+
+    #[Route('/get/{id}/edit', name: 'app_user_get', methods: ['GET'],  options: ['expose'=>true])]
+    public function getUserById(Request $request, int $id, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher): Response
+    {
+        $user = $entityManager->getRepository(User::class)->find($id);
+        if (!$user) {
+            return new JsonResponse(['error' => 'user not found'], 404);
+        }
+        $data=[
+            'id' => $user->getId(),
+            'nom' => $user->getNom(),
+            'prenom' => $user->getPrenom(),
+            'username' => $user->getUsername(),
+            'password' => $user->getPassword(),
+            'position' => $user->getPosition(),
+            'adresse' => $user->getAdresse(),
+            'Tel1' => $user->getTel1(),
+            'Tel2' => $user->getTel2(),
+            'roles' => $user->getRoles(),
+        ];
+        return new JsonResponse(['data' => $data]);
+    }
+
+    #[Route('/{id}/edit', name: 'app_user_edit', methods: ['POST'],  options: ['expose'=>true])]
+    public function edit(Request $request, int $id, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher): Response
+    {
+        $user = $entityManager->getRepository(User::class)->find($id);
+        $data = json_decode($request->getContent(), true);
+        if( !empty($data['nom']) || !empty($data['prenom']) || !empty($data['username']) ||
+        !empty($data['password']) || !empty($data['position']) || !empty($data['adresse']) ||
+         !empty($data['Tel1']) || !empty($data['Tel2'])){
+            $user->setNom($data['nom']);
+            $user->setPrenom($data['prenom']);
+            $user->setUsername($data['username']);
+            $hashedPassword = $passwordHasher->hashPassword($user, $data['password']);
+            $user->setPassword($hashedPassword);
+            $user->setPosition($data['position']);
+            $user->setAdresse($data['adresse']);
+            $user->setTel1($data['Tel1']);
+            $user->setTel2($data['Tel2']); 
+            $roles = $data['roles'] ?? [];
+            $user->setRoles($roles);
+            $entityManager->flush();
+            $users = $entityManager->getRepository(User::class)->findAll();
+            $html = $this->renderView('gestion_users/partials/list.html.twig', ['users' => $users]);
+            return new JsonResponse(['html' => $html]);
         }
         return $this->render('gestion_users/user/new.html.twig');
     }
 
-    #[Route('/', name: 'app_user_store', methods: ['GET', 'POST'])]
-    public function store(Request $request, EntityManagerInterface $entityManager): Response
+    #[Route('/{id}/delete', name: 'app_user_delete', methods: ['POST'],  options: ['expose'=>true])]
+    public function delete(User $user, EntityManagerInterface $entityManager): JsonResponse
     {
-        $data = json_decode($request->getContent(), true);
-        $user = new User();
-        $user->setNom($data['nom']);
-        $user->setPrenom($data['prenom']);
-        $user->setUsername($data['username']);
-        $user->setPassword($data['password']);
-        $user->setPosition($data['position']);
-        $user->setAdresse($data['adresse']);
-        $user->setTel1($data['Tel1']);
-        $user->setTel2($data['Tel2'] ?? null); 
-    
-        $entityManager->persist($user);
+        //not to delete but just to set date of column deletion.
+        $user->setDateDeletion(new \DateTimeImmutable);
         $entityManager->flush();
-    
-        return $this->json(['status' => 'success', 'message' => 'User created successfully!']);
-    }
-
-    #[Route('/{id}', name: 'app_user_show', methods: ['GET'])]
-    public function show(User $user): Response
-    {
-        return $this->render('gestion_users/user/show.html.twig', [
-            'user' => $user,
-        ]);
-    }
-
-    #[Route('/{id}/edit', name: 'app_user_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, User $user, EntityManagerInterface $entityManager): Response
-    {
-        $form = $this->createForm(UserType::class, $user);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->render('gestion_users/user/edit.html.twig', [
-            'user' => $user,
-            'form' => $form,
-        ]);
-    }
-
-    #[Route('/{id}', name: 'app_user_delete', methods: ['POST'])]
-    public function delete(Request $request, User $user, EntityManagerInterface $entityManager): Response
-    {
-        if ($this->isCsrfTokenValid('delete'.$user->getId(), $request->getPayload()->getString('_token'))) {
-            $entityManager->remove($user);
-            $entityManager->flush();
-        }
-
-        return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
+        return new JsonResponse(['success' => true]);
     }
 }
